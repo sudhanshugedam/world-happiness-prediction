@@ -1,0 +1,18 @@
+{
+    "model_name": "Gradient Boosting Regression",
+    "features": [
+        "Explained by: Log GDP per capita",
+        "Explained by: Social support",
+        "Explained by: Healthy life expectancy",
+        "Explained by: Freedom to make life choices",
+        "Explained by: Generosity",
+        "Explained by: Perceptions of corruption"
+    ],
+    "target": "Life evaluation (3-year average)",
+    "training_samples": 810,
+    "testing_samples": 203,
+    "total_clean_samples": 1013,
+    "mae": 0.36982175334805417,
+    "rmse": 0.48716282191414606,
+    "r2_score": 0.7614673149408748
+}

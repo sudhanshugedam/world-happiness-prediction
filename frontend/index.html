@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        World Happiness Prediction Dashboard
+    </title>
+
+
+    <style>
+
+:root{
+  --navy:#111827;--navy2:#1b2436;--purple:#5b50d6;--purple2:#4940b8;
+  --purple-soft:#f1efff;--bg:#f5f6f8;--card:#fff;--text:#172033;
+  --muted:#697386;--muted2:#98a1b2;--line:#e1e5eb;--green:#16804b;
+  --green-soft:#edf8f2;--amber:#a56a00;--shadow:0 5px 18px rgba(17,24,39,.055);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{font-family:Inter,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:14px}
+header{position:sticky;top:0;z-index:1000;height:68px;background:rgba(255,255,255,.97);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+.header-inner{height:100%;max-width:1450px;margin:auto;padding:0 34px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:11px}
+.brand:before{content:"WH";display:grid;place-items:center;width:35px;height:35px;border-radius:6px;background:var(--navy);color:#fff;font-size:11px;font-weight:900}
+.brand h1{font-size:17px;line-height:1.1;font-weight:800;letter-spacing:-.2px}
+.brand p{font-size:11px;color:var(--muted);margin-top:3px}
+nav{display:flex;gap:3px}
+nav a{padding:9px 13px;border-radius:5px;color:var(--muted);text-decoration:none;font-size:13px;font-weight:700}
+nav a:hover{background:#f1f2f5;color:var(--text)}
+main{max-width:1450px;margin:auto;padding:42px 34px 65px}
+.eyebrow{font-size:9px;font-weight:900;color:var(--purple);letter-spacing:1.1px;text-transform:uppercase;margin-bottom:7px}
+.hero{margin-bottom:22px}
+.hero h2{font-size:38px;line-height:1.15;letter-spacing:-1px;font-weight:850}
+.hero p{max-width:850px;margin-top:9px;color:var(--muted);font-size:15px}
+.hero:after{display:none!important}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:14px}
+.section-head h2{font-size:25px;letter-spacing:-.4px}
+.section-head p{font-size:12px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:9px;box-shadow:var(--shadow);padding:27px}
+.prediction-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(350px,.65fr);gap:16px}
+.prediction-grid>.card:first-child{border-top:3px solid var(--purple)}
+.card-title{font-size:19px;font-weight:850;margin-bottom:3px}
+.card-subtitle{font-size:13px;color:var(--muted);margin-bottom:17px}
+.factor-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.factor{margin:0;padding:13px;border:1px solid var(--line);border-radius:7px;background:#fbfcfd}
+.factor-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}
+.factor-name{font-size:13px;font-weight:800;color:#354056}
+.number-input{width:86px;padding:7px;border:1px solid #d5dae3;border-radius:5px;background:#fff;color:var(--text);font-size:13px;text-align:center;font-weight:750;outline:none}
+.number-input:focus{border-color:var(--purple);box-shadow:0 0 0 2px rgba(91,80,214,.08)}
+input[type=range]{width:100%;height:4px;accent-color:var(--purple);cursor:pointer}
+.range-values{display:flex;justify-content:space-between;color:var(--muted2);font-size:10px;margin-top:2px}
+.result-card{min-height:100%;background:var(--navy);border:1px solid var(--navy);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;overflow:hidden}
+.result-card:before{content:"";position:absolute;width:300px;height:300px;border-radius:50%;border:1px solid rgba(255,255,255,.06);right:-170px;top:-160px}
+.result-card:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.045);left:-150px;bottom:-130px}
+.result-card>*{position:relative;z-index:1}
+.emoji{font-size:28px;margin-bottom:8px}
+.result-label{font-size:11px;color:#9ca7ba;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.score{font-size:86px;line-height:.95;font-weight:850;letter-spacing:-4px;margin:7px 0 2px}
+.scale{font-size:11px;color:#7e899d;margin-bottom:14px}
+.happiness-level{padding:8px 14px;border-radius:5px;background:rgba(91,80,214,.16);border:1px solid rgba(145,137,255,.2);color:#d9d6ff;font-size:12px;font-weight:850}
+.score-meaning{max-width:320px;color:#8994a8;font-size:11px;margin-top:8px}
+.model-card{width:100%;margin-top:16px;padding:12px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:6px}
+.model-card strong{display:block;color:#eef1f6;font-size:12px}.model-card span{font-size:10px;color:#7e899d}
+.status{margin-top:10px;color:#50c483;font-size:10px;font-weight:850;letter-spacing:.4px}
+.result-actions{display:grid;grid-template-columns:1fr 90px;gap:8px;margin-top:13px}
+.predict-button,.reset-button{min-height:44px;border-radius:6px;font-size:13px;font-weight:850;cursor:pointer}
+.predict-button{border:1px solid var(--purple);background:var(--purple);color:#fff}
+.predict-button:hover:not(:disabled){background:var(--purple2)}
+.predict-button:disabled{opacity:.6;cursor:wait}
+.reset-button{border:1px solid #d5dae2;background:#fff;color:#5d6778}
+.reset-button:hover{background:var(--purple-soft);color:var(--purple2)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:7px;padding:15px 16px;box-shadow:var(--shadow)}
+.stat-number{font-size:25px;line-height:1;font-weight:850}
+.stat-label{font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-top:6px}
+.analytics,.about{margin-top:43px}
+.performance{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:15px}
+.performance-box{padding:15px;border:1px solid var(--line);border-radius:7px;background:#fff}
+.performance-value{font-size:27px;color:var(--purple2);font-weight:850;line-height:1}
+.performance-label{font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;margin-top:5px}
+.analytics-grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:18px}
+.chart-card{min-width:0}
+.chart-image{display:block;width:100%;border:1px solid var(--line);border-radius:5px;background:#fff;max-height:none}
+.table-wrapper{overflow:auto;border:1px solid var(--line);border-radius:7px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 10px;border-bottom:1px solid var(--line);font-size:11px;text-align:center}
+th{background:#f7f8fa;color:#687286;text-transform:uppercase;letter-spacing:.3px;font-weight:850;font-size:10px}
+td:first-child{text-align:left;font-weight:750;color:#344057}
+tr:last-child td{border-bottom:0}.best-row{background:#f0faf4}.best-row td{color:#176b43}
+.importance-list{margin-top:7px}.importance-item{margin-bottom:14px}
+.importance-header{display:flex;justify-content:space-between;font-size:12px;color:#5f6a7d;margin-bottom:5px}
+.importance-header strong{color:var(--purple2)}
+.bar-background{height:7px;border-radius:20px;background:#eceef3;overflow:hidden}.bar{height:100%;background:var(--purple);border-radius:20px;transition:width .6s ease}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px}
+.about-list{padding-left:18px;color:#626d80;font-size:13px}.about-list li{margin-bottom:7px}
+.workflow{display:grid;grid-template-columns:repeat(7,1fr);gap:0;margin-top:15px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.workflow-step{padding:16px 9px;text-align:center;border-right:1px solid var(--line);position:relative}
+.workflow-step:last-child{border-right:0}
+.workflow-num{font-size:10px;color:var(--purple);font-weight:900;letter-spacing:.5px}
+.workflow-title{font-size:11px;font-weight:800;margin-top:5px}
+.workflow-arrow{position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:10px;height:10px;background:#fff;border-top:1px solid var(--line);border-right:1px solid var(--line);rotate:45deg;z-index:2}
+footer{padding:28px;color:#9aa1af;text-align:center;font-size:11px;background:#fff;border-top:1px solid var(--line)}
+@media(max-width:1050px){.prediction-grid{grid-template-columns:1fr}.result-card{min-height:410px}.workflow{grid-template-columns:repeat(4,1fr)}.workflow-step:nth-child(4){border-right:0}.stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){header{height:auto;padding:11px 15px}.header-inner{flex-direction:column;gap:9px}.brand{width:100%}nav{width:100%;justify-content:center}main{padding:27px 15px}.factor-grid,.analytics-grid,.about-grid{grid-template-columns:1fr}.performance{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.workflow{grid-template-columns:1fr}.workflow-step{border-right:0;border-bottom:1px solid var(--line)}.workflow-step:last-child{border-bottom:0}.workflow-arrow{display:none}}
+
+
+/* Readability upgrade */
+.section-description b{font-size:inherit}
+.card p{font-size:13px}
+.card li{font-size:13px}
+@media(max-width:760px){
+  .hero h2{font-size:32px}
+  .hero p{font-size:13px}
+  .section-title{font-size:18px}
+  .section-description,.card p,.card li{font-size:12px}
+  .factor-name{font-size:12px}
+  .number-input{font-size:12px}
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ======================================================
+     HEADER
+======================================================= -->
+
+<header>
+
+    <div class="header-inner">
+
+        <div class="brand">
+
+            <h1>
+                World Happiness Prediction
+            </h1>
+
+            <p>
+                Machine Learning Prediction & Analytics
+            </p>
+
+        </div>
+
+
+        <nav>
+
+            <a href="#prediction">
+                Prediction
+            </a>
+
+            <a href="#analytics">
+                Analytics
+            </a>
+
+            <a href="#about">
+                About Project
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<!-- ======================================================
+     MAIN
+======================================================= -->
+
+<main>
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <h2>
+            Predict World Happiness Score
+        </h2>
+
+        <p>
+
+            Estimate the life evaluation score using six selected explanatory factors from the World Happiness dataset
+            to estimate the predicted life evaluation score
+            using a trained Machine Learning model.
+
+        </p>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         PREDICTION
+    =================================================== -->
+
+    <section id="prediction">
+
+
+        <div class="prediction-grid">
+
+
+            <!-- INPUT CARD -->
+
+            <div class="card">
+
+                <h3 class="section-title">
+                    Happiness Factors
+                </h3>
+
+                <p class="section-description">
+
+                    Adjust the values and click
+                    <b>Predict Happiness Score</b>.
+
+                </p>
+
+
+                <!-- GDP -->
+
+                <div class="factor">
+
+                    <div class="factor-top">
+
+                        <span class="factor-name">
+                            Log GDP per capita
+                        </span>
+
+                        <input
+                            class="number-input"
+                            id="gdp_value"
+                            type="number"
+                            value="1.915"
+                            step="0.001"
+                        >
+
+                    </div>
+
+                    <input
+                        id="gdp"
+                        type="range"
+                        min="0"
+                        max="2.5"
+                        step="0.001"
+                        value="1.915"
+                    >
+
+                    <div class="range-values">
+                        <span>0</span>
+                        <span>2.5</span>
+                    </div>
+
+                </div>
+
+
+                <!-- SOCIAL SUPPORT -->
+
+                <div class="factor">
+
+                    <div class="factor-top">
+
+                        <span class="factor-name">
+                            Social Support
+                        </span>
+
+                        <input
+                            class="number-input"
+                            id="social_value"
+                            type="number"
+                            value="1.638"
+                            step="0.001"
+                        >
+
+                    </div>
+
+                    <input
+                        id="social"
+                        type="range"
+                        min="0"
+                        max="2"
+                        step="0.001"
+                        value="1.638"
+                    >
+
+                    <div class="range-values">
+                        <span>0</span>
+                        <span>2</span>
+                    </div>
+
+                </div>
+
+
+                <!-- LIFE EXPECTANCY -->
+
+                <div class="factor">
+
+                    <div class="factor-top">
+
+                        <span class="factor-name">
+                            Healthy Life Expectancy
+                        </span>
+
+                        <input
+                            class="number-input"
+                            id="life_value"
+                            type="number"
+                            value="0.884"
+                            step="0.001"
+                        >
+
+                    </div>
+
+                    <input
+                        id="life"
+                        type="range"
+                        min="0"
+                        max="1.2"
+                        step="0.001"
+                        value="0.884"
+                    >
+
+                    <div class="range-values">
+                        <span>0</span>
+                        <span>1.2</span>
+                    </div>
+
+                </div>
+
+
+                <!-- FREEDOM -->
+
+                <div class="factor">
+
+                    <div class="factor-top">
+
+                        <span class="factor-name">
+                            Freedom to Make Life Choices
+                        </span>
+
+                        <input
+                            class="number-input"
+                            id="freedom_value"
+                            type="number"
+                            value="0.669"
+                            step="0.001"
+                        >
+
+                    </div>
+
+                    <input
+                        id="freedom"
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.001"
+                        value="0.669"
+                    >
+
+                    <div class="range-values">
+                        <span>0</span>
+                        <span>1</span>
+                    </div>
+
+                </div>
+
+
+                <!-- GENEROSITY -->
+
+                <div class="factor">
+
+                    <div class="factor-top">
+
+                        <span class="factor-name">
+                            Generosity
+                        </span>
+
+                        <input
+                            class="number-input"
+                            id="generosity_value"
+                            type="number"
+                            value="0.362"
+                            step="0.001"
+                        >
+
+                    </div>
+
+                    <input
+                        id="generosity"
+                        type="range"
+                        min="0"
+                        max="0.7"
+                        step="0.001"
+                        value="0.362"
+                    >
+
+                    <div class="range-values">
+                        <span>0</span>
+                        <span>0.7</span>
+                    </div>
+
+                </div>
+
+
+                <!-- CORRUPTION -->
+
+                <div class="factor">
+
+                    <div class="factor-top">
+
+                        <span class="factor-name">
+                            Perceptions of Corruption
+                        </span>
+
+                        <input
+                            class="number-input"
+                            id="corruption_value"
+                            type="number"
+                            value="0.265"
+                            step="0.001"
+                        >
+
+                    </div>
+
+                    <input
+                        id="corruption"
+                        type="range"
+                        min="0"
+                        max="0.7"
+                        step="0.001"
+                        value="0.265"
+                    >
+
+                    <div class="range-values">
+                        <span>0</span>
+                        <span>0.7</span>
+                    </div>
+
+                </div>
+
+
+                <div class="result-actions">
+                    <button
+                        class="predict-button"
+                        id="predictButton"
+                        onclick="predictHappiness()"
+                    >
+                        Predict Happiness Score
+                    </button>
+
+                    <button
+                        class="reset-button"
+                        type="button"
+                        onclick="resetForm()"
+                    >
+                        Reset
+                    </button>
+                </div>
+
+            </div>
+
+
+
+            <!-- RESULT CARD -->
+
+            <div class="card result-card">
+
+                <div class="emoji">
+                    😊
+                </div>
+
+                <div class="result-label">
+                    Predicted Happiness Score
+                </div>
+
+                <div
+                    class="score"
+                    id="score"
+                >
+                    7.316
+                </div>
+
+                <div class="scale">
+                    Scale: 0 – 10
+                </div>
+
+                <div class="happiness-level" id="happinessLevel">
+                    Very High Happiness
+                </div>
+
+                <div class="score-meaning" id="scoreMeaning">
+                    The predicted score is based on the six selected explanatory factors.
+                </div>
+
+
+                <div class="model-card">
+
+                    <strong id="modelName">
+                        Gradient Boosting Regression
+                    </strong>
+
+                    <span>
+                        Best Performing Model
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="status"
+                    id="apiStatus"
+                >
+                    ● API Connected
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         STATISTICS
+    =================================================== -->
+
+    <section class="stats">
+
+        <div class="stat">
+
+            <div
+                class="stat-number"
+                id="originalSamples"
+            >
+                2,116
+            </div>
+
+            <div class="stat-label">
+                Original Records
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div
+                class="stat-number"
+                id="cleanSamples"
+            >
+                1,013
+            </div>
+
+            <div class="stat-label">
+                Clean Records
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-number">
+                6
+            </div>
+
+            <div class="stat-label">
+                ML Features
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div
+                class="stat-number"
+                id="trainingSamples"
+            >
+                810
+            </div>
+
+            <div class="stat-label">
+                Training Samples
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div
+                class="stat-number"
+                id="testingSamples"
+            >
+                203
+            </div>
+
+            <div class="stat-label">
+                Testing Samples
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         ANALYTICS
+    =================================================== -->
+
+    <section
+        class="analytics"
+        id="analytics"
+    >
+
+        <div class="hero">
+
+            <h2>
+                📊 Machine Learning Analytics
+            </h2>
+
+            <p>
+                Analysis and performance of the trained
+                regression models.
+            </p>
+
+        </div>
+
+
+        <!-- MODEL PERFORMANCE -->
+
+        <div class="card">
+
+            <h3 class="section-title">
+                🏆 Best Model Performance
+            </h3>
+
+            <p class="section-description">
+
+                The best model selected during training
+                based on R² performance.
+
+            </p>
+
+
+            <div class="performance">
+
+                <div class="performance-box">
+
+                    <div
+                        class="performance-value"
+                        id="performanceR2"
+                    >
+                        76.15%
+                    </div>
+
+                    <div class="performance-label">
+                        R² Score
+                    </div>
+
+                </div>
+
+
+                <div class="performance-box">
+
+                    <div
+                        class="performance-value"
+                        id="performanceRMSE"
+                    >
+                        0.4872
+                    </div>
+
+                    <div class="performance-label">
+                        RMSE
+                    </div>
+
+                </div>
+
+
+                <div class="performance-box">
+
+                    <div
+                        class="performance-value"
+                        id="performanceMAE"
+                    >
+                        0.3698
+                    </div>
+
+                    <div class="performance-label">
+                        MAE
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- MODEL COMPARISON -->
+
+        <div class="card" style="margin-top:25px">
+
+            <h3 class="section-title">
+                📊 Model Comparison
+            </h3>
+
+            <p class="section-description">
+                Comparison of the regression algorithms
+                trained on the dataset.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Model
+                            </th>
+
+                            <th>
+                                MAE
+                            </th>
+
+                            <th>
+                                MSE
+                            </th>
+
+                            <th>
+                                RMSE
+                            </th>
+
+                            <th>
+                                R² Score
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="modelTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- GRAPHS -->
+
+        <div class="analytics-grid">
+
+
+            <!-- CORRELATION -->
+
+            <div class="card">
+
+                <h3 class="section-title">
+                    🔥 Correlation Matrix
+                </h3>
+
+                <p class="section-description">
+
+                    Relationship between the selected
+                    factors and happiness score.
+
+                </p>
+
+                <img
+                    id="correlationImage"
+                    class="chart-image"
+                    src="http://127.0.0.1:8000/plots/correlation_heatmap.png"
+                    alt="Correlation Heatmap"
+                >
+
+            </div>
+
+
+
+            <!-- DISTRIBUTION -->
+
+            <div class="card">
+
+                <h3 class="section-title">
+                    📈 Happiness Score Distribution
+                </h3>
+
+                <p class="section-description">
+
+                    Distribution of happiness scores
+                    in the cleaned dataset.
+
+                </p>
+
+                <img
+                    id="distributionImage"
+                    class="chart-image"
+                    src="http://127.0.0.1:8000/plots/happiness_distribution.png"
+                    alt="Happiness Distribution"
+                >
+
+            </div>
+
+
+
+            <!-- ACTUAL VS PREDICTED -->
+
+            <div class="card">
+
+                <h3 class="section-title">
+                    🎯 Actual vs Predicted
+                </h3>
+
+                <p class="section-description">
+
+                    Comparison of actual happiness scores
+                    with predictions from the best model.
+
+                </p>
+
+                <img
+                    id="actualPredictedImage"
+                    class="chart-image"
+                    src="http://127.0.0.1:8000/plots/actual_vs_predicted.png"
+                    alt="Actual vs Predicted"
+                >
+
+            </div>
+
+
+
+            <!-- FEATURE IMPORTANCE -->
+
+            <div class="card">
+
+                <h3 class="section-title">
+                    🎯 Feature Importance
+                </h3>
+
+                <p class="section-description">
+
+                    Relative importance of the six
+                    input factors for the best model.
+
+                </p>
+
+
+                <div
+                    class="importance-list"
+                    id="importanceList"
+                >
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         ABOUT PROJECT
+    =================================================== -->
+
+    
+        <section class="workflow-section" id="methodology" style="margin-top:18px;">
+            <div class="section-head">
+                <div>
+                    <div class="eyebrow">Methodology</div>
+                    <h2>Prediction Pipeline</h2>
+                </div>
+                <p>From World Happiness Report data to the final regression estimate.</p>
+            </div>
+            <div class="workflow">
+                <div class="workflow-step"><div class="workflow-num">01</div><div class="workflow-title">Dataset</div><div class="workflow-arrow"></div></div>
+                <div class="workflow-step"><div class="workflow-num">02</div><div class="workflow-title">Data Cleaning</div><div class="workflow-arrow"></div></div>
+                <div class="workflow-step"><div class="workflow-num">03</div><div class="workflow-title">Six Factors</div><div class="workflow-arrow"></div></div>
+                <div class="workflow-step"><div class="workflow-num">04</div><div class="workflow-title">Train Models</div><div class="workflow-arrow"></div></div>
+                <div class="workflow-step"><div class="workflow-num">05</div><div class="workflow-title">Evaluate</div><div class="workflow-arrow"></div></div>
+                <div class="workflow-step"><div class="workflow-num">06</div><div class="workflow-title">Select Best</div><div class="workflow-arrow"></div></div>
+                <div class="workflow-step"><div class="workflow-num">07</div><div class="workflow-title">Predict Score</div></div>
+            </div>
+        </section>
+
+<section
+        class="about"
+        id="about"
+    >
+
+        <div class="hero">
+
+            <h2>
+                🤖 About the Project
+            </h2>
+
+        </div>
+
+
+        <div class="about-grid">
+
+
+            <div class="card">
+
+                <h3 class="section-title">
+                    Project Objective
+                </h3>
+
+                <p class="section-description">
+
+                    To develop a Machine Learning system
+                    that predicts the happiness score
+                    using important explanatory factors
+                    from the World Happiness dataset.
+
+                </p>
+
+                <ul class="about-list">
+
+                    <li>
+                        Dataset preprocessing and cleaning
+                    </li>
+
+                    <li>
+                        Selection of six explanatory features
+                    </li>
+
+                    <li>
+                        Regression model training
+                    </li>
+
+                    <li>
+                        Model evaluation and comparison
+                    </li>
+
+                    <li>
+                        Happiness score prediction
+                    </li>
+
+                    <li>
+                        Interactive web dashboard
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+
+            <div class="card">
+
+                <h3 class="section-title">
+                    Machine Learning Workflow
+                </h3>
+
+                <ul class="about-list">
+
+                    <li>
+                        📥 Load World Happiness dataset
+                    </li>
+
+                    <li>
+                        🧹 Clean missing observations
+                    </li>
+
+                    <li>
+                        🔎 Select six input features
+                    </li>
+
+                    <li>
+                        ✂️ Split data into training and testing
+                    </li>
+
+                    <li>
+                        🧠 Train regression algorithms
+                    </li>
+
+                    <li>
+                        📊 Evaluate MAE, RMSE and R²
+                    </li>
+
+                    <li>
+                        🏆 Select the best model
+                    </li>
+
+                    <li>
+                        🌐 Connect model with web application
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+
+<!-- ======================================================
+     FOOTER
+======================================================= -->
+
+<footer>
+
+    World Happiness Prediction System
+
+    <br>
+
+    Machine Learning TAE Project
+
+</footer>
+
+
+
+<!-- ======================================================
+     JAVASCRIPT
+======================================================= -->
+
+<script>
+
+
+    // =====================================================
+    // API URL
+    // =====================================================
+
+    const API_URL =
+        "http://127.0.0.1:8000";
+
+
+    // =====================================================
+    // SLIDER CONNECTION
+    // =====================================================
+
+    function connectSlider(
+        sliderId,
+        inputId
+    ) {
+
+        const slider =
+            document.getElementById(
+                sliderId
+            );
+
+        const input =
+            document.getElementById(
+                inputId
+            );
+
+
+        slider.addEventListener(
+            "input",
+            function () {
+
+                input.value =
+                    slider.value;
+
+            }
+        );
+
+
+        input.addEventListener(
+            "input",
+            function () {
+
+                slider.value =
+                    input.value;
+
+            }
+        );
+
+    }
+
+
+    connectSlider(
+        "gdp",
+        "gdp_value"
+    );
+
+    connectSlider(
+        "social",
+        "social_value"
+    );
+
+    connectSlider(
+        "life",
+        "life_value"
+    );
+
+    connectSlider(
+        "freedom",
+        "freedom_value"
+    );
+
+    connectSlider(
+        "generosity",
+        "generosity_value"
+    );
+
+    connectSlider(
+        "corruption",
+        "corruption_value"
+    );
+
+
+    // =====================================================
+    // CHECK API
+    // =====================================================
+
+    async function checkAPI() {
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/health`
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                response.ok &&
+                data.model_loaded
+            ) {
+
+                document.getElementById(
+                    "apiStatus"
+                ).textContent =
+                    "● API Connected";
+
+            }
+
+        }
+        catch (error) {
+
+            document.getElementById(
+                "apiStatus"
+            ).textContent =
+                "● API Not Connected";
+
+        }
+
+    }
+
+
+    // =====================================================
+    // LOAD ANALYTICS
+    // =====================================================
+
+    async function loadAnalytics() {
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/analytics`
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.detail ||
+                    "Analytics unavailable"
+                );
+
+            }
+
+
+            // -------------------------------------------------
+            // MODEL
+            // -------------------------------------------------
+
+            document.getElementById(
+                "modelName"
+            ).textContent =
+                data.model.name;
+
+
+            document.getElementById(
+                "performanceR2"
+            ).textContent =
+                (
+                    data.model.r2 * 100
+                ).toFixed(2) + "%";
+
+
+            document.getElementById(
+                "performanceRMSE"
+            ).textContent =
+                data.model.rmse.toFixed(4);
+
+
+            document.getElementById(
+                "performanceMAE"
+            ).textContent =
+                data.model.mae.toFixed(4);
+
+
+            // -------------------------------------------------
+            // DATASET STATISTICS
+            // -------------------------------------------------
+
+            document.getElementById(
+                "originalSamples"
+            ).textContent =
+                data.dataset.original_samples
+                    .toLocaleString();
+
+
+            document.getElementById(
+                "cleanSamples"
+            ).textContent =
+                data.dataset.clean_samples
+                    .toLocaleString();
+
+
+            document.getElementById(
+                "trainingSamples"
+            ).textContent =
+                data.dataset.training_samples
+                    .toLocaleString();
+
+
+            document.getElementById(
+                "testingSamples"
+            ).textContent =
+                data.dataset.testing_samples
+                    .toLocaleString();
+
+
+            // -------------------------------------------------
+            // MODEL COMPARISON TABLE
+            // -------------------------------------------------
+
+            const table =
+                document.getElementById(
+                    "modelTable"
+                );
+
+
+            table.innerHTML = "";
+
+
+            data.model_comparison.forEach(
+                function (row, index) {
+
+                    const tr =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    if (index === 0) {
+
+                        tr.className =
+                            "best-row";
+
+                    }
+
+
+                    tr.innerHTML = `
+
+                        <td>
+                            ${row.Model}
+                        </td>
+
+                        <td>
+                            ${Number(row.MAE).toFixed(4)}
+                        </td>
+
+                        <td>
+                            ${Number(row.MSE).toFixed(4)}
+                        </td>
+
+                        <td>
+                            ${Number(row.RMSE).toFixed(4)}
+                        </td>
+
+                        <td>
+                            ${Number(row["R2 Score"]).toFixed(4)}
+                        </td>
+
+                    `;
+
+
+                    table.appendChild(
+                        tr
+                    );
+
+                }
+            );
+
+
+            // -------------------------------------------------
+            // FEATURE IMPORTANCE
+            // -------------------------------------------------
+
+            const importanceList =
+                document.getElementById(
+                    "importanceList"
+                );
+
+
+            importanceList.innerHTML = "";
+
+
+            const importance =
+                data.feature_importance;
+
+
+            if (
+                importance.length > 0
+            ) {
+
+                const maximum =
+                    importance[0].importance;
+
+
+                importance.forEach(
+                    function (item) {
+
+                        const percentage =
+                            (
+                                item.importance /
+                                maximum
+                            ) * 100;
+
+
+                        const div =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        div.className =
+                            "importance-item";
+
+
+                        div.innerHTML = `
+
+                            <div class="importance-header">
+
+                                <span>
+                                    ${item.feature}
+                                </span>
+
+                                <strong>
+                                    ${(item.importance * 100).toFixed(2)}%
+                                </strong>
+
+                            </div>
+
+                            <div class="bar-background">
+
+                                <div
+                                    class="bar"
+                                    style="width:${percentage}%"
+                                ></div>
+
+                            </div>
+
+                        `;
+
+
+                        importanceList.appendChild(
+                            div
+                        );
+
+                    }
+                );
+
+            }
+
+
+        }
+        catch (error) {
+
+            console.error(
+                "Analytics error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // HAPPINESS SCORE INTERPRETATION
+    // =====================================================
+
+    function updateHappinessLevel(score) {
+
+        const level =
+            document.getElementById("happinessLevel");
+
+        const meaning =
+            document.getElementById("scoreMeaning");
+
+        if (score < 3) {
+            level.textContent = "Low Happiness";
+            meaning.textContent =
+                "The predicted score falls in the low range on the 0–10 scale.";
+        }
+        else if (score < 5) {
+            level.textContent = "Moderate Happiness";
+            meaning.textContent =
+                "The predicted score falls in the moderate range on the 0–10 scale.";
+        }
+        else if (score < 7) {
+            level.textContent = "High Happiness";
+            meaning.textContent =
+                "The predicted score falls in the high range on the 0–10 scale.";
+        }
+        else {
+            level.textContent = "Very High Happiness";
+            meaning.textContent =
+                "The predicted score falls in the very high range on the 0–10 scale.";
+        }
+    }
+
+
+    // =====================================================
+    // RESET FORM
+    // =====================================================
+
+    function resetForm() {
+
+        const defaults = {
+            gdp: "1.915",
+            gdp_value: "1.915",
+
+            social: "1.638",
+            social_value: "1.638",
+
+            life: "0.884",
+            life_value: "0.884",
+
+            freedom: "0.669",
+            freedom_value: "0.669",
+
+            generosity: "0.362",
+            generosity_value: "0.362",
+
+            corruption: "0.265",
+            corruption_value: "0.265"
+        };
+
+        Object.keys(defaults).forEach(function(id) {
+            const element = document.getElementById(id);
+
+            if (element) {
+                element.value = defaults[id];
+            }
+        });
+
+        document.getElementById("score").textContent = "7.316";
+
+        document.getElementById("happinessLevel").textContent =
+            "Very High Happiness";
+
+        document.getElementById("scoreMeaning").textContent =
+            "The predicted score is based on the six selected explanatory factors.";
+
+        document.getElementById("apiStatus").textContent =
+            "● API Connected";
+
+        document.getElementById("predictButton").textContent =
+            "Predict Happiness Score";
+    }
+
+
+    // =====================================================
+    // PREDICT HAPPINESS
+    // =====================================================
+
+    async function predictHappiness() {
+
+        const button =
+            document.getElementById(
+                "predictButton"
+            );
+
+
+        const score =
+            document.getElementById(
+                "score"
+            );
+
+
+        button.disabled =
+            true;
+
+
+        button.textContent =
+            "Predicting...";
+
+
+        const inputData = {
+
+            gdp_per_capita:
+                parseFloat(
+                    document.getElementById(
+                        "gdp_value"
+                    ).value
+                ),
+
+            social_support:
+                parseFloat(
+                    document.getElementById(
+                        "social_value"
+                    ).value
+                ),
+
+            healthy_life_expectancy:
+                parseFloat(
+                    document.getElementById(
+                        "life_value"
+                    ).value
+                ),
+
+            freedom:
+                parseFloat(
+                    document.getElementById(
+                        "freedom_value"
+                    ).value
+                ),
+
+            generosity:
+                parseFloat(
+                    document.getElementById(
+                        "generosity_value"
+                    ).value
+                ),
+
+            corruption:
+                parseFloat(
+                    document.getElementById(
+                        "corruption_value"
+                    ).value
+                )
+
+        };
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/predict`,
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify(
+                                inputData
+                            )
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.detail ||
+                    "Prediction failed"
+                );
+
+            }
+
+
+            const predictedScore =
+                data.predicted_happiness_score;
+
+            score.textContent =
+                predictedScore.toFixed(3);
+
+            updateHappinessLevel(predictedScore);
+
+
+            document.getElementById(
+                "modelName"
+            ).textContent =
+                data.model;
+
+
+            document.getElementById(
+                "apiStatus"
+            ).textContent =
+                "● Prediction Successful";
+
+
+        }
+        catch (error) {
+
+            alert(
+                "Prediction Error: " +
+                error.message
+            );
+
+        }
+
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            "Predict Happiness Score";
+
+    }
+
+
+    // =====================================================
+    // START DASHBOARD
+    // =====================================================
+
+    checkAPI();
+
+    loadAnalytics();
+
+    updateHappinessLevel(
+        parseFloat(
+            document.getElementById("score").textContent
+        )
+    );
+
+
+</script>
+
+
+</body>
+
+</html>
